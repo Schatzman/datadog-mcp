@@ -11,10 +11,16 @@ from .client import validate_keys
 from .resources import (
     get_dashboard_by_id,
     get_dashboards_list,
+    get_downtime_by_id,
+    get_downtimes_list,
+    get_incident_by_id,
+    get_incidents_list,
     get_monitor_by_id,
     get_monitors_list,
+    get_slo_by_id,
+    get_slos_list,
 )
-from .tools import apm, dashboards, events, hosts, incidents, logs, metrics, monitors, slos, usage
+from .tools import apm, dashboards, downtimes, events, hosts, incidents, logs, metrics, monitors, slos, usage
 
 mcp = FastMCP(
     "DataDog MCP",
@@ -79,6 +85,49 @@ def mute_monitor(monitor_id: int) -> str:
 def unmute_monitor(monitor_id: int) -> str:
     """Unmute a monitor. Scope: monitors_write."""
     return monitors.unmute_monitor(monitor_id)
+
+
+@mcp.tool()
+def update_monitor(monitor_id: int, body_json: str) -> str:
+    """Update a monitor. body_json: JSON with optional name, message, query, options, tags. Scope: monitors_write. Returns: updated monitor object or error."""
+    return monitors.update_monitor(monitor_id, body_json)
+
+
+@mcp.tool()
+def delete_monitor(monitor_id: int) -> str:
+    """Delete a monitor. Scope: monitors_write. Returns: {\"ok\": true, \"deleted_monitor_id\": id} or error."""
+    return monitors.delete_monitor(monitor_id)
+
+
+# --- Downtimes (https://docs.datadoghq.com/api/latest/downtimes/) ---
+@mcp.tool()
+def list_downtimes(current_only: bool | None = None, with_creator: bool | None = None) -> str:
+    """List downtimes. Optional: current_only, with_creator. Scope: monitors_read."""
+    return downtimes.list_downtimes(current_only=current_only, with_creator=with_creator)
+
+
+@mcp.tool()
+def get_downtime(downtime_id: int) -> str:
+    """Get a single downtime by ID. Scope: monitors_read."""
+    return downtimes.get_downtime(downtime_id)
+
+
+@mcp.tool()
+def create_downtime(body_json: str) -> str:
+    """Create a downtime. body_json: JSON with scope (list), start (Unix ts), optional end, message. Scope: monitors_write."""
+    return downtimes.create_downtime(body_json)
+
+
+@mcp.tool()
+def update_downtime(downtime_id: int, body_json: str) -> str:
+    """Update a downtime. body_json: JSON with optional scope, start, end, message. Scope: monitors_write."""
+    return downtimes.update_downtime(downtime_id, body_json)
+
+
+@mcp.tool()
+def cancel_downtime(downtime_id: int) -> str:
+    """Cancel a downtime. Scope: monitors_write."""
+    return downtimes.cancel_downtime(downtime_id)
 
 
 # --- Dashboards (https://docs.datadoghq.com/api/latest/dashboards/) ---
@@ -296,6 +345,42 @@ def resource_dashboard(dashboard_id: str) -> str:
     return get_dashboard_by_id(dashboard_id)
 
 
+@mcp.resource("datadog://downtimes")
+def resource_downtimes_list() -> str:
+    """List of DataDog downtimes (live)."""
+    return get_downtimes_list()
+
+
+@mcp.resource("datadog://downtimes/{downtime_id}")
+def resource_downtime(downtime_id: str) -> str:
+    """Single downtime JSON by ID (live)."""
+    return get_downtime_by_id(downtime_id)
+
+
+@mcp.resource("datadog://slos")
+def resource_slos_list() -> str:
+    """List of DataDog SLOs (live)."""
+    return get_slos_list()
+
+
+@mcp.resource("datadog://slos/{slo_id}")
+def resource_slo(slo_id: str) -> str:
+    """Single SLO JSON by ID (live)."""
+    return get_slo_by_id(slo_id)
+
+
+@mcp.resource("datadog://incidents")
+def resource_incidents_list() -> str:
+    """List of DataDog incidents (live)."""
+    return get_incidents_list()
+
+
+@mcp.resource("datadog://incidents/{incident_id}")
+def resource_incident(incident_id: str) -> str:
+    """Single incident JSON by ID (live)."""
+    return get_incident_by_id(incident_id)
+
+
 # --- Prompts ---
 @mcp.prompt()
 def prompt_summarize_monitor_state(monitor_id: str) -> str:
@@ -321,6 +406,32 @@ def prompt_draft_incident_status(incident_id: str) -> str:
         return f"Using the following DataDog incident, draft a short status message (1–2 paragraphs) suitable for internal or customer communication. Include current state and impact if present.\n\nIncident data:\n{json.dumps(data, indent=2)}"
     except json.JSONDecodeError:
         return f"Draft a status message from this incident (raw):\n\n{raw}"
+
+
+@mcp.prompt()
+def prompt_summarize_slo(slo_id: str) -> str:
+    """Generate a prompt asking the LLM to summarize the SLO state and burn rate. Pass slo_id."""
+    raw = get_slo_by_id(slo_id)
+    try:
+        data = json.loads(raw)
+        if "error" in data:
+            return f"The SLO request failed: {data['error']}. Ask the user to check the SLO ID."
+        return f"Summarize the following DataDog SLO in 2–3 sentences for a status report. Include name, target, current state, error budget, and burn rate if present.\n\nSLO data:\n{json.dumps(data, indent=2)}"
+    except json.JSONDecodeError:
+        return f"Summarize the following DataDog SLO (raw):\n\n{raw}"
+
+
+@mcp.prompt()
+def prompt_dashboard_insights(dashboard_id: str) -> str:
+    """Generate a prompt asking the LLM to summarize key widgets and suggest focus areas. Pass dashboard_id."""
+    raw = get_dashboard_by_id(dashboard_id)
+    try:
+        data = json.loads(raw)
+        if "error" in data:
+            return f"The dashboard request failed: {data['error']}. Ask the user to check the dashboard ID."
+        return f"Using the following DataDog dashboard, summarize the key widgets and metrics in 2–3 sentences, then suggest 1–2 focus areas or potential issues to investigate.\n\nDashboard data:\n{json.dumps(data, indent=2)}"
+    except json.JSONDecodeError:
+        return f"Summarize this dashboard and suggest focus areas (raw):\n\n{raw}"
 
 
 def run(transport: str = "stdio") -> None:

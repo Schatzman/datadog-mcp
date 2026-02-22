@@ -25,6 +25,8 @@ References:
 | `create_monitor`      | POST /api/v1/monitor         | monitors_write |
 | `mute_monitor`        | PATCH /api/v1/monitor/{id}   | monitors_write |
 | `unmute_monitor`      | PATCH /api/v1/monitor/{id}   | monitors_write |
+| `update_monitor`      | PATCH /api/v1/monitor/{id}   | monitors_write |
+| `delete_monitor`       | DELETE /api/v1/monitor/{id}  | monitors_write |
 | `datadog://monitors`   | GET /api/v1/monitor          | monitors_read  |
 | `datadog://monitors/{id}` | GET /api/v1/monitor/{id} | monitors_read  |
 
@@ -68,25 +70,41 @@ References:
 
 ## Service Level Objectives
 
-| MCP tool   | DataDog endpoint   | Scopes   |
-|------------|--------------------|----------|
-| `list_slos`| GET /api/v1/slo     | slo_read |
-| `get_slo`  | GET /api/v1/slo/{id}| slo_read |
+| MCP tool / resource | DataDog endpoint   | Scopes   |
+|---------------------|--------------------|----------|
+| `list_slos`         | GET /api/v1/slo     | slo_read |
+| `get_slo`           | GET /api/v1/slo/{id}| slo_read |
+| `datadog://slos`    | GET /api/v1/slo     | slo_read |
+| `datadog://slos/{id}` | GET /api/v1/slo/{id}| slo_read |
 
 ## Incidents (v2)
 
-| MCP tool         | DataDog endpoint           | Scopes        |
-|------------------|----------------------------|---------------|
-| `list_incidents` | GET /api/v2/incidents      | incident_read |
-| `get_incident`   | GET /api/v2/incidents/{id} | incident_read |
-| `create_incident`| POST /api/v2/incidents     | incident_write|
-| `update_incident`| PATCH /api/v2/incidents/{id}| incident_write|
+| MCP tool / resource   | DataDog endpoint           | Scopes        |
+|-----------------------|----------------------------|---------------|
+| `list_incidents`     | GET /api/v2/incidents      | incident_read |
+| `get_incident`       | GET /api/v2/incidents/{id} | incident_read |
+| `create_incident`    | POST /api/v2/incidents     | incident_write|
+| `update_incident`    | PATCH /api/v2/incidents/{id}| incident_write|
+| `datadog://incidents`| GET /api/v2/incidents      | incident_read |
+| `datadog://incidents/{id}` | GET /api/v2/incidents/{id} | incident_read |
 
 ## APM
 
 | MCP tool            | DataDog endpoint      | Scopes   |
 |---------------------|-----------------------|----------|
 | `list_apm_services` | GET /api/v2/apm/services | apm_read |
+
+## Downtimes (v1)
+
+| MCP tool / resource    | DataDog endpoint               | Scopes          |
+|------------------------|--------------------------------|------------------|
+| `list_downtimes`       | GET /api/v1/downtime           | monitors_read    |
+| `get_downtime`         | GET /api/v1/downtime/{id}      | monitors_read    |
+| `create_downtime`      | POST /api/v1/downtime          | monitors_write   |
+| `update_downtime`      | PATCH /api/v1/downtime/{id}    | monitors_write   |
+| `cancel_downtime`      | DELETE /api/v1/downtime/{id}   | monitors_write   |
+| `datadog://downtimes`  | GET /api/v1/downtime           | monitors_read   |
+| `datadog://downtimes/{id}` | GET /api/v1/downtime/{id}  | monitors_read   |
 
 ## Usage
 
@@ -102,3 +120,5 @@ Prompts do not call the API directly; they use tool/resource data to build a pro
 |--------------------------------|------------------------|
 | `prompt_summarize_monitor_state` | `get_monitor` (by ID) |
 | `prompt_draft_incident_status`   | `get_incident` (by ID)|
+| `prompt_summarize_slo`           | `get_slo` (by ID)     |
+| `prompt_dashboard_insights`      | `get_dashboard` (by ID)|

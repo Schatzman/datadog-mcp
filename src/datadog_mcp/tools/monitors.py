@@ -95,6 +95,31 @@ def unmute_monitor(monitor_id: int) -> str:
         return json.dumps({"error": sanitize_error(e)})
 
 
+def update_monitor(monitor_id: int, body_json: str) -> str:
+    """Update a monitor. PATCH /api/v1/monitor/{id}. body_json: JSON with optional name, message, query, options, tags, etc. Scope: monitors_write."""
+    try:
+        api = _api()
+        body = json.loads(body_json)
+        update = MonitorUpdateRequest(**body)
+        m = api.update_monitor(monitor_id, body=update)
+        return json.dumps(_monitor_to_dict(m))
+    except json.JSONDecodeError as e:
+        return json.dumps({"error": f"Invalid JSON: {e!s}"})
+    except ApiException as e:
+        return json.dumps({"error": sanitize_error(e)})
+
+
+def delete_monitor(monitor_id: int) -> str:
+    """Delete a monitor. DELETE /api/v1/monitor/{id}. Scope: monitors_write."""
+    try:
+        api = _api()
+        result = api.delete_monitor(monitor_id)
+        out = getattr(result, "deleted_monitor_id", monitor_id)
+        return json.dumps({"ok": True, "deleted_monitor_id": out})
+    except ApiException as e:
+        return json.dumps({"error": sanitize_error(e)})
+
+
 def _monitor_to_dict(m: Any) -> dict:
     """Convert Monitor object to JSON-serializable dict."""
     if hasattr(m, "model_dump"):
