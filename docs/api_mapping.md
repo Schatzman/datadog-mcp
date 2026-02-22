@@ -94,6 +94,13 @@ References:
 |---------------------|-----------------------|----------|
 | `list_apm_services` | GET /api/v2/apm/services | apm_read |
 
+## Synthetics
+
+| MCP tool                 | DataDog endpoint                    | Scopes          |
+|-------------------------|-------------------------------------|-----------------|
+| `list_synthetics_tests` | GET /api/v1/synthetics/tests (list)  | synthetics_read |
+| `get_synthetics_test`   | GET /api/v1/synthetics/tests/{public_id} | synthetics_read |
+
 ## Downtimes (v1)
 
 | MCP tool / resource    | DataDog endpoint               | Scopes          |

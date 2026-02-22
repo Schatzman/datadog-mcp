@@ -140,6 +140,17 @@ On 429, the server retries with backoff (up to 2 retries). If still rate-limited
 
 ---
 
+## Synthetics
+
+[Synthetics API](https://docs.datadoghq.com/api/latest/synthetics/)
+
+| Tool | Parameters | Scopes | Returns |
+|------|------------|--------|---------|
+| list_synthetics_tests | page_size, page_number (optional) | synthetics_read | JSON list of Synthetic tests |
+| get_synthetics_test | public_id (str) | synthetics_read | Single Synthetic test object |
+
+---
+
 ## Usage
 
 [Usage metering](https://docs.datadoghq.com/api/v1/usage-metering/)

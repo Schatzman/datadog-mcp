@@ -20,7 +20,7 @@ from .resources import (
     get_slo_by_id,
     get_slos_list,
 )
-from .tools import apm, dashboards, downtimes, events, hosts, incidents, logs, metrics, monitors, slos, usage
+from .tools import apm, dashboards, downtimes, events, hosts, incidents, logs, metrics, monitors, slos, synthetics, usage
 
 mcp = FastMCP(
     "DataDog MCP",
@@ -305,6 +305,19 @@ def update_incident(incident_id: str, body_json: str) -> str:
 def list_apm_services(filter_env: str = "*") -> str:
     """List APM services. filter_env: environment, use '*' for all. Scope: apm_read."""
     return apm.list_apm_services(filter_env=filter_env)
+
+
+# --- Synthetics (https://docs.datadoghq.com/api/latest/synthetics/) ---
+@mcp.tool()
+def list_synthetics_tests(page_size: int | None = None, page_number: int | None = None) -> str:
+    """List Synthetic tests. Optional: page_size, page_number. Scope: synthetics_read."""
+    return synthetics.list_synthetics_tests(page_size=page_size, page_number=page_number)
+
+
+@mcp.tool()
+def get_synthetics_test(public_id: str) -> str:
+    """Get a single Synthetic test by public_id. Scope: synthetics_read."""
+    return synthetics.get_synthetics_test(public_id=public_id)
 
 
 # --- Usage (https://docs.datadoghq.com/api/v1/usage-metering/) ---
