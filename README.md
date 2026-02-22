@@ -82,6 +82,7 @@ Then connect the MCP Inspector to the shown URL (e.g. `http://localhost:8000/mcp
 | `list_incidents`, `get_incident`, `create_incident`, `update_incident` | Incidents (v2) | incident_read, incident_write |
 | `list_apm_services` | APM services | apm_read |
 | `list_synthetics_tests`, `get_synthetics_test` | Synthetics | synthetics_read |
+| `list_notebooks`, `get_notebook` | Notebooks | notebooks_read |
 | `get_usage_summary` | Usage metering | usage_read |
 
 ## Resources (URI)

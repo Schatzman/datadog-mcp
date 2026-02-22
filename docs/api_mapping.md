@@ -101,6 +101,13 @@ References:
 | `list_synthetics_tests` | GET /api/v1/synthetics/tests (list)  | synthetics_read |
 | `get_synthetics_test`   | GET /api/v1/synthetics/tests/{public_id} | synthetics_read |
 
+## Notebooks
+
+| MCP tool           | DataDog endpoint                  | Scopes         |
+|--------------------|-----------------------------------|----------------|
+| `list_notebooks`   | GET /api/v1/notebooks (list)      | notebooks_read |
+| `get_notebook`     | GET /api/v1/notebooks/{notebook_id} | notebooks_read |
+
 ## Downtimes (v1)
 
 | MCP tool / resource    | DataDog endpoint               | Scopes          |

@@ -151,6 +151,17 @@ On 429, the server retries with backoff (up to 2 retries). If still rate-limited
 
 ---
 
+## Notebooks
+
+[Notebooks API](https://docs.datadoghq.com/api/latest/notebooks/)
+
+| Tool | Parameters | Scopes | Returns |
+|------|------------|--------|---------|
+| list_notebooks | count, start (optional) | notebooks_read | JSON list of notebook summaries |
+| get_notebook | notebook_id (str) | notebooks_read | Single notebook object |
+
+---
+
 ## Usage
 
 [Usage metering](https://docs.datadoghq.com/api/v1/usage-metering/)

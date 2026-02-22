@@ -20,7 +20,7 @@ from .resources import (
     get_slo_by_id,
     get_slos_list,
 )
-from .tools import apm, dashboards, downtimes, events, hosts, incidents, logs, metrics, monitors, slos, synthetics, usage
+from .tools import apm, dashboards, downtimes, events, hosts, incidents, logs, metrics, monitors, notebooks, slos, synthetics, usage
 
 mcp = FastMCP(
     "DataDog MCP",
@@ -318,6 +318,19 @@ def list_synthetics_tests(page_size: int | None = None, page_number: int | None 
 def get_synthetics_test(public_id: str) -> str:
     """Get a single Synthetic test by public_id. Scope: synthetics_read."""
     return synthetics.get_synthetics_test(public_id=public_id)
+
+
+# --- Notebooks (https://docs.datadoghq.com/api/latest/notebooks/) ---
+@mcp.tool()
+def list_notebooks(count: int | None = None, start: int | None = None) -> str:
+    """List notebooks. Optional: count, start. Scope: notebooks_read."""
+    return notebooks.list_notebooks(count=count, start=start)
+
+
+@mcp.tool()
+def get_notebook(notebook_id: str) -> str:
+    """Get a single notebook by notebook_id. Scope: notebooks_read."""
+    return notebooks.get_notebook(notebook_id=notebook_id)
 
 
 # --- Usage (https://docs.datadoghq.com/api/v1/usage-metering/) ---
